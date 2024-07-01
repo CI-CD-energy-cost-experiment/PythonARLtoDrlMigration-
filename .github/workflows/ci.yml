@@ -18,38 +18,54 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Start Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v3 # use hash or @vX here (See note below)
+        with:
+          task: start-measurement
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Generate setup.py file
-      run: |
-        echo "from setuptools import setup, find_packages" > setup.py
-        echo "" >> setup.py
-        echo "setup(" >> setup.py
-        echo "    name='your_package_name'," >> setup.py
-        echo "    version='1.0.0'," >> setup.py
-        echo "    packages=find_packages()," >> setup.py
-        echo "    install_requires=[" >> setup.py
-        echo "        # List your dependencies here" >> setup.py
-        echo "    ]," >> setup.py
-        echo "    entry_points={" >> setup.py
-        echo "        'console_scripts': [" >> setup.py
-        echo "            'your_script_name = your_package.module:main_function'," >> setup.py
-        echo "        ]," >> setup.py
-        echo "    }," >> setup.py
-        echo ")" >> setup.py
+      - name: Checkout Repo Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v3 # use hash or @vX here (See note below)
+        with:
+          task: get-measurement
+          label: 'repo checkout'
 
-    - name: Build package
-      run: |
-        pip install setuptools wheel
-        python setup.py sdist bdist_wheel
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    #- name: Run tests
-    #  run: |
-    #    pip install pytest
-    #    pytest
+      - name: Generate setup.py file
+        run: |
+          echo "from setuptools import setup, find_packages" > setup.py
+          echo "" >> setup.py
+          echo "setup(" >> setup.py
+          echo "    name='your_package_name'," >> setup.py
+          echo "    version='1.0.0'," >> setup.py
+          echo "    packages=find_packages()," >> setup.py
+          echo "    install_requires=[" >> setup.py
+          echo "        # List your dependencies here" >> setup.py
+          echo "    ]," >> setup.py
+          echo "    entry_points={" >> setup.py
+          echo "        'console_scripts': [" >> setup.py
+          echo "            'your_script_name = your_package.module:main_function'," >> setup.py
+          echo "        ]," >> setup.py
+          echo "    }," >> setup.py
+          echo ")" >> setup.py
+
+      - name: Build package
+        run: |
+          pip install setuptools wheel
+          python setup.py sdist bdist_wheel
+
+      - name: Show Energy Results
+        uses: green-coding-solutions/eco-ci-energy-estimation@v3 # use hash or @vX here (See note below)
+        with:
+          task: display-results
+
+      #- name: Run tests
+      #  run: |
+      #    pip install pytest
+      #    pytest
