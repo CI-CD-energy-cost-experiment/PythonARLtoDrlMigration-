@@ -26,6 +26,24 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Generate setup.py file
+      run: |
+        echo "from setuptools import setup, find_packages" > setup.py
+        echo "" >> setup.py
+        echo "setup(" >> setup.py
+        echo "    name='your_package_name'," >> setup.py
+        echo "    version='1.0.0'," >> setup.py
+        echo "    packages=find_packages()," >> setup.py
+        echo "    install_requires=[" >> setup.py
+        echo "        # List your dependencies here" >> setup.py
+        echo "    ]," >> setup.py
+        echo "    entry_points={" >> setup.py
+        echo "        'console_scripts': [" >> setup.py
+        echo "            'your_script_name = your_package.module:main_function'," >> setup.py
+        echo "        ]," >> setup.py
+        echo "    }," >> setup.py
+        echo ")" >> setup.py
+
     - name: Build package
       run: |
         pip install setuptools wheel
